@@ -1,6 +1,7 @@
 import telebot
 import random
 import config
+import time
 
 
 #создание бота
@@ -9,7 +10,7 @@ bot=telebot.TeleBot(token)
 
 greetings = ["Привет!", "Здравствуй!", "Вуссап!", "Ку!", "Хеллоу!"]
 
-
+muted_users = {}
 
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
@@ -34,9 +35,19 @@ def handle_photo(message):
     bot.send_message(message.chat.id, f"Спасибо за фото! Я получил вашу фотографию, {emoj}")
 
 
-@bot.message_handler(func=lambda message: True)
-def echo_message(message):
-    bot.reply_to(message, message.text)
+# @bot.message_handler(func=lambda message: True)
+# def echo_message(message):
+#     bot.reply_to(message, message.text)
+
+def handle_message(message):
+    user_id = message.from_user.id
+    text = message.text.lower()
+    
+    if "админ дурак" in text or "админ козёл" in text:
+        if user_id not in muted_users or (time.time() - muted_users[user_id]) >= 10:
+            bot.restrict_chat_member(message.chat.id, user_id, until_date=int(time.time()) + 10)
+            bot.reply_to(message, f"{message.from_user.first_name}, вы были замучены на 10 секунд за оскорбление администрации.")
+            muted_users[user_id] = time.time()
 
 
 bot.infinity_polling()
