@@ -50,7 +50,7 @@ def handle_message(message):
         if user_id not in blocked_users or (time.time() - blocked_users[user_id]) >= 10:
             bot.send_message(user_id, "Вы были заблокированы на 10 секунд за оскорбление. Пожалуйста, уважайте других.")
             blocked_users[user_id] = time.time()
-            time.sleep(10)  # Подождать 10 секунд
+            time.sleep(10)
             bot.send_message(user_id, "Вы были разблокированы и можете продолжить общение.")
 
 
