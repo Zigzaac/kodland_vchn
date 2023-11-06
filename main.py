@@ -39,6 +39,8 @@ def handle_photo(message):
 # def echo_message(message):
 #     bot.reply_to(message, message.text)
 
+
+@bot.message_handler(func=lambda message: message.text is not None)
 def handle_message(message):
     user_id = message.from_user.id
     text = message.text.lower()
