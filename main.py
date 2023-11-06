@@ -10,7 +10,7 @@ bot=telebot.TeleBot(token)
 
 greetings = ["Привет!", "Здравствуй!", "Вуссап!", "Ку!", "Хеллоу!"]
 
-blocked_users = {}
+muted_users = {}
 
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
@@ -46,15 +46,12 @@ def handle_message(message):
     text = message.text.lower()
     
     if "админ дурак" in text or "админ козёл" in text:
-        if user_id not in blocked_users or (time.time() - blocked_users[user_id]) >= 10:
-            bot.send_message(user_id, "Вы были заблокированы на 10 секунд за оскорбление. Пожалуйста, уважайте других.")
-            blocked_users[user_id] = time.time()
-            bot.leave_chat(user_id)  # Бот покидает чат с пользователем
-            time.sleep(10)  # Подождать 10 секунд
-            bot.join_chat(user_id)  # Бот возвращается в чат
-            bot.send_message(user_id, "Вы были разблокированы и можете продолжить общение.")
+        if user_id not in muted_users or (time.time() - muted_users[user_id]) >= 10:
+            bot.restrict_chat_member(message.chat.id, user_id, until_date=int(time.time()) + 10)
+            bot.reply_to(message, f"{message.from_user.first_name}, вы были замучены на 10 секунд за оскорбление администрации.")
+            muted_users[user_id] = time.time()
             
-            
+
 
 bot.infinity_polling()
 
