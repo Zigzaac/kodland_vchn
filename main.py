@@ -40,7 +40,6 @@ def handle_photo(message):
 #     bot.reply_to(message, message.text)
 
 
-
 @bot.message_handler(func=lambda message: message.text is not None)
 def handle_message(message):
     user_id = message.from_user.id
@@ -50,9 +49,11 @@ def handle_message(message):
         if user_id not in blocked_users or (time.time() - blocked_users[user_id]) >= 10:
             bot.send_message(user_id, "Вы были заблокированы на 10 секунд за оскорбление. Пожалуйста, уважайте других.")
             blocked_users[user_id] = time.time()
-            time.sleep(10)
+            bot.leave_chat(user_id)  # Бот покидает чат с пользователем
+            time.sleep(10)  # Подождать 10 секунд
+            bot.join_chat(user_id)  # Бот возвращается в чат
             bot.send_message(user_id, "Вы были разблокированы и можете продолжить общение.")
-
+            
 
 bot.infinity_polling()
 
