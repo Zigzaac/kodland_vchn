@@ -10,7 +10,7 @@ bot=telebot.TeleBot(token)
 
 greetings = ["Привет!", "Здравствуй!", "Вуссап!", "Ку!", "Хеллоу!"]
 
-muted_users = {}
+blocked_users = {}
 
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
@@ -40,25 +40,18 @@ def handle_photo(message):
 #     bot.reply_to(message, message.text)
 
 
+
 @bot.message_handler(func=lambda message: message.text is not None)
 def handle_message(message):
     user_id = message.from_user.id
     text = message.text.lower()
     
-    if message.chat.type == "private":
-        if "админ дурак" in text or "админ козёл" in text:
-            if user_id not in muted_users or (time.time() - muted_users[user_id]) >= 10:
-                # Мьют в ЛС
-                bot.restrict_chat_member(message.chat.id, user_id, until_date=int(time.time()) + 10)
-                bot.reply_to(message, f"Вы были замучены на 10 секунд за оскорбление администрации.")
-                muted_users[user_id] = time.time()
-    else:
-        if "админ дурак" in text or "админ козёл" in text:
-            if user_id not in muted_users or (time.time() - muted_users[user_id]) >= 10:
-                # Мьют в группе
-                bot.restrict_chat_member(message.chat.id, user_id, until_date=int(time.time()) + 10)
-                bot.reply_to(message, f"{message.from_user.first_name}, вы были замучены на 10 секунд за оскорбление администрации.")
-                muted_users[user_id] = time.time()
+    if "админ дурак" in text or "админ козёл" in text:
+        if user_id not in blocked_users or (time.time() - blocked_users[user_id]) >= 10:
+            bot.send_message(user_id, "Вы были заблокированы на 10 секунд за оскорбление. Пожалуйста, уважайте других.")
+            blocked_users[user_id] = time.time()
+            time.sleep(10)  # Подождать 10 секунд
+            bot.send_message(user_id, "Вы были разблокированы и можете продолжить общение.")
 
 
 bot.infinity_polling()
