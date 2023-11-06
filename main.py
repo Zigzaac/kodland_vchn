@@ -54,6 +54,7 @@ def handle_message(message):
             bot.join_chat(user_id)  # Бот возвращается в чат
             bot.send_message(user_id, "Вы были разблокированы и можете продолжить общение.")
             
+            
 
 bot.infinity_polling()
 
